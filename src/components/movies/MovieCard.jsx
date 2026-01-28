@@ -1,96 +1,41 @@
+import { Star, Calendar } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { Star, Calendar, Heart } from 'lucide-react';
-import { getPosterUrl, getRatingColor } from '../../utils/helpers';
-import { useUser } from '../../hooks/useUser';
+
 const MovieCard = ({ movie }) => {
-const { user, isFavorite, addToFavorites, removeFromFavorites } = useUser();
-const favorite = isFavorite(movie._id);
-const handleFavoriteClick = async (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-        if (!user) {
-        alert('Please login to add favorites');
-        return;
-         }
-        try {
-        if (favorite) {
-        await removeFromFavorites(movie._id);
-        } else {
-        await addToFavorites(movie._id);
-        }
-        } catch (error) {
-        console.error('Failed to toggle favorite:', error);
-        }
-        };
-
-return (
-<Link to={`/movie/${movie._id}`} className="card overflow-hidden group">
-{/* Poster */}
-<div className="relative h-72 overflow-hidden bg-gray-200">
-<img
-          src={getPosterUrl(movie.poster)}
+  return (
+    <Link to={`/movie/${movie._id}`} className="group relative block overflow-hidden rounded-2xl bg-gray-900 transition-all hover:-translate-y-2 --hover:shadow-[0_20px_50px_rgba(239,_68,_68,_0.3)]">
+      {/* ფილმის პოსტერი */}
+      <div className="--aspect-[2/3] w-full">
+        <img 
+          src={movie.poster || 'https://via.placeholder.com/300x450?text=No+Image'} 
           alt={movie.title}
-          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-          onError={(e) => {
-            e.target.src = 'https://via.placeholder.com/300x450?text=No+Image';
-}}
-/>
-{/* Favorite button */}
-{user && (
-    <button
-            onClick={handleFavoriteClick}
-            className={`absolute top-3 right-3 p-2 rounded-full backdrop-blur-sm transition ${
-              favorite
-              ? 'bg-red-500 text-white'
-              : 'bg-white/80 text-gray-700 hover:bg-red-500 hover:text-white'
-                  }`}>
+          className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
+        />
+      </div>
 
-           <Heart size={20} fill={favorite ? 'currentColor' : 'none'} />
-              </button>
-              )}
-
-          
-              {movie.imdbRating && movie.imdbRating !== 'N/A' && (
-              <div className="absolute top-3 left-3 bg-black/70 backdrop-blur-sm px-2 py-1 rounded-lg flex items-center gap-1">
-              <Star size={16} className="text-yellow-400" fill="currentColor" />
-                    <span className={`font-bold ${getRatingColor(movie.imdbRating)}`}>
-                          {movie.imdbRating}
-                          </span>
-              </div>
-              )}
-              </div>
-
-
-              <div className="p-4">
-                  <h3 className="font-bold text-lg text-gray-900 line-clamp-2 mb-2 group-hover:text-primary-600 transition">
-                    {movie.title}
-                  </h3>
-              <div className="flex items-center gap-4 text-sm text-gray-600">
-                <div className="flex items-center gap-1">
-                   <Calendar size={16} />
-                    <span>{movie.year}</span>
-                    </div>
-              {movie.type && (
-                <span className="px-2 py-1 bg-primary-100 text-primary-700 rounded text-xs font-medium uppercase">
-                      {movie.type}
-                    </span>
-              )}
-              </div>
-
-              {movie.genre && movie.genre.length > 0 && (
-                        <div className="mt-2 flex flex-wrap gap-1">
-            {movie.genre.slice(0, 2).map((g, idx) => (
-              <span
-                key={idx}
-                className="px-2 py-1 bg-gray-100 text-gray-700 rounded text-xs"
-              >
-                {g}
-              </span>
-            ))}
+      {/* ინფორმაცია Hover-ზე */}
+      <div className="absolute inset-0 --bg-gradient-to-t from-black via-black/40 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100 flex flex-col justify-end p-5">
+        <h3 className="text-xl font-bold text-white mb-2">{movie.title}</h3>
+        
+        <div className="flex items-center justify-between text-sm text-gray-300">
+          <div className="flex items-center gap-1">
+            <Calendar size={14} className="text-primary-500" />
+            <span>{movie.year}</span>
           </div>
-        )}
+          {movie.imdbRating && (
+            <div className="flex items-center gap-1 bg-yellow-500/20 px-2 py-1 rounded text-yellow-500 border border-yellow-500/30">
+              <Star size={14} fill="currentColor" />
+              <span className="font-bold">{movie.imdbRating}</span>
+            </div>
+          )}
+        </div>
+        
+        <button className="mt-4 w-full py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg text-sm font-bold transition-colors">
+          ნახვა
+        </button>
       </div>
     </Link>
   );
 };
+
 export default MovieCard;
